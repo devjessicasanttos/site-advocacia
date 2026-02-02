@@ -15,6 +15,9 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Link do WhatsApp centralizado para facilitar mudanças futuras
+  const whatsappUrl = "https://wa.me/5511958775594?text=Olá,%20Dra.%20Tamires.%20Gostaria%20de%20agendar%20uma%20consultoria.";
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -22,11 +25,6 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleWhatsAppClick = () => {
-    window.open("https://wa.me/5511958775594?text=Olá,%20gostaria%20de%20agendar%20uma%20consultoria.", "_blank");
-    setIsMobileMenuOpen(false);
-  };
 
   return (
     <header
@@ -64,13 +62,15 @@ const Header = () => {
               </Link>
             ))}
             
-            <Button
-              size="sm"
-              className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant"
-              onClick={handleWhatsAppClick}
-            >
-              Agende sua Consultoria
-            </Button>
+            {/* Botão Desktop com link direto */}
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+              <Button
+                size="sm"
+                className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant"
+              >
+                Agende sua Consultoria
+              </Button>
+            </a>
           </nav>
 
           {/* Mobile menu button */}
@@ -103,12 +103,19 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
-              <Button
-                className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2"
-                onClick={handleWhatsAppClick}
+              
+              {/* Botão Mobile com link direto */}
+              <a 
+                href={whatsappUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full"
               >
-                Agende sua Consultoria
-              </Button>
+                <Button className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2 w-full">
+                  Agende sua Consultoria
+                </Button>
+              </a>
             </nav>
           </motion.div>
         )}
