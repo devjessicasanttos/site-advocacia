@@ -30,39 +30,30 @@ const Header = () => {
             <div className="w-10 h-10 bg-gradient-navy rounded-lg flex items-center justify-center shadow-elegant group-hover:shadow-gold transition-all duration-300">
               <Scale className="w-5 h-5 text-primary-foreground" />
             </div>
-            <div className="hidden sm:block">
-              <p className="font-serif text-lg font-bold text-primary leading-none">Dra. Tamires Moura</p>
-              <p className="text-xs text-muted-foreground">Advogada</p>
-            </div>
+            <p className="font-serif text-lg font-bold text-primary leading-none hidden sm:block">Dra. Tamires Moura</p>
           </Link>
-
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-accent font-medium transition-colors duration-300 relative group">
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
-              </Link>
+              <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-accent font-medium transition-colors duration-300">{link.label}</Link>
             ))}
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant">Agende sua Consultoria</Button>
+              <Button size="sm" className="bg-gradient-navy text-primary-foreground">Agende sua Consultoria</Button>
             </a>
           </nav>
-
-          <button className="md:hidden p-2 text-foreground" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <button className="md:hidden p-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
       </div>
-
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="md:hidden bg-card/95 backdrop-blur-md border-t border-border">
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="md:hidden bg-card/95 border-t border-border">
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
               {navLinks.map((link) => (
-                <Link key={link.to} to={link.to} onClick={() => setIsMobileMenuOpen(false)} className="text-foreground/80 hover:text-accent font-medium py-2 text-left transition-colors duration-300">{link.label}</Link>
+                <Link key={link.to} to={link.to} onClick={() => setIsMobileMenuOpen(false)} className="text-foreground/80 py-2">{link.label}</Link>
               ))}
               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2 w-full">Agende sua Consultoria</Button>
+                <Button className="bg-gradient-navy text-primary-foreground w-full">Agende sua Consultoria</Button>
               </a>
             </nav>
           </motion.div>
@@ -71,5 +62,4 @@ const Header = () => {
     </header>
   );
 };
-
 export default Header;
