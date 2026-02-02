@@ -9,7 +9,7 @@ const contactMethods = [
     action: "Falar no WhatsApp",
     color: "bg-green-600",
     // Link direto para o chat
-    link: "https://wa.me/5511999999999?text=Olá%20Dra.%20Tamires,%20preciso%20de%20um%20atendimento%20urgente." 
+    link: "https://wa.me/5511958775594?text=Olá%20Dra.%20Tamires,%20preciso%20de%20um%20atendimento%20urgente." 
   },
   {
     title: "Agendar Consultoria",
@@ -18,7 +18,7 @@ const contactMethods = [
     action: "Ver Horários",
     color: "bg-amber-500",
     // Aqui incluímos uma mensagem específica de agendamento
-    link: "https://wa.me/5511999999999?text=Olá%20Dra.%20Tamires,%20gostaria%20de%20verificar%20os%20horários%20disponíveis%20para%20uma%20consultoria." 
+    link: "https://wa.me/5511958775594?text=Olá%20Dra.%20Tamires,%20gostaria%20de%20verificar%20os%20horários%20disponíveis%20para%20uma%20consultoria." 
   },
   {
     title: "E-mail Profissional",
@@ -26,8 +26,7 @@ const contactMethods = [
     icon: Mail,
     action: "Enviar E-mail",
     color: "bg-slate-800",
-    // Abre o e-mail com o assunto já preenchido
-    link: "mailto:contato@tamiresmoura.com.br?subject=Consulta%20Jurídica%20-%20[Seu%20Nome]"
+    link: "mailto:tamiresmoura.adv@gmail.com?subject=Consulta%20Jurídica%20-%20[Seu%20Nome]"
   },
   {
     title: "Ligação Direta",
@@ -35,8 +34,7 @@ const contactMethods = [
     icon: Phone,
     action: "Ligar Agora",
     color: "bg-slate-800",
-    // Comando para discagem direta
-    link: "tel:+5511999999999"
+    link: "tel:+5511958775594"
   }
 ];
 const ContactActions = () => {
