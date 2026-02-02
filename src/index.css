@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 220 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    --primary: 220 56% 22%;
+    --primary-foreground: 40 20% 98%;
+
+    --secondary: 40 30% 94%;
+    --secondary-foreground: 220 30% 15%;
+
+    --muted: 40 20% 94%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 38 70% 42%;
+    --accent-foreground: 40 20% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 220 56% 22%;
+
+    --radius: 0.5rem;
+
+    /* Custom tokens */
+    --gold: 38 70% 42%;
+    --gold-light: 38 60% 55%;
+    --navy: 220 56% 22%;
+    --navy-light: 220 40% 35%;
+    --cream: 40 20% 98%;
+    --warm-gray: 30 10% 60%;
+
+    /* Gradients */
+    --gradient-navy: linear-gradient(135deg, hsl(220 56% 22%) 0%, hsl(220 40% 30%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(38 70% 42%) 0%, hsl(38 60% 55%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(40 20% 98%) 0%, hsl(40 25% 95%) 100%);
+
+    /* Shadows */
+    --shadow-elegant: 0 4px 20px -4px hsl(220 56% 22% / 0.12);
+    --shadow-card: 0 8px 30px -8px hsl(220 56% 22% / 0.15);
+    --shadow-gold: 0 4px 20px -4px hsl(38 70% 42% / 0.3);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 30% 10%;
+    --foreground: 40 20% 98%;
+
+    --card: 220 30% 14%;
+    --card-foreground: 40 20% 98%;
+
+    --popover: 220 30% 14%;
+    --popover-foreground: 40 20% 98%;
+
+    --primary: 38 70% 50%;
+    --primary-foreground: 220 30% 10%;
+
+    --secondary: 220 25% 20%;
+    --secondary-foreground: 40 20% 98%;
+
+    --muted: 220 25% 18%;
+    --muted-foreground: 40 15% 65%;
+
+    --accent: 38 70% 50%;
+    --accent-foreground: 220 30% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 25% 22%;
+    --input: 220 25% 22%;
+    --ring: 38 70% 50%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(38 70% 42%) 0%, hsl(38 60% 55%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-navy {
+    background: linear-gradient(135deg, hsl(220 56% 22%) 0%, hsl(220 40% 30%) 100%);
+  }
+
+  .bg-gradient-hero {
+    background: linear-gradient(180deg, hsl(40 20% 98%) 0%, hsl(40 25% 95%) 100%);
+  }
+
+  .shadow-elegant {
+    box-shadow: 0 4px 20px -4px hsl(220 56% 22% / 0.12);
+  }
+
+  .shadow-card {
+    box-shadow: 0 8px 30px -8px hsl(220 56% 22% / 0.15);
+  }
+
+  .shadow-gold {
+    box-shadow: 0 4px 20px -4px hsl(38 70% 42% / 0.3);
+  }
+}
+
+@layer utilities {
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-450 {
+    animation-delay: 450ms;
+  }
+}
