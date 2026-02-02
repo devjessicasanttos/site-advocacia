@@ -14,25 +14,16 @@ const navLinks = [
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const whatsappUrl = "https://wa.me/5511958775594?text=Olá,%20Dra.%20Tamires.%20Gostaria%20de%20agendar%20uma%20consultoria.";
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-card/95 backdrop-blur-md shadow-elegant py-3"
-          : "bg-card py-5 border-b border-white/10"
-      }`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-card/95 backdrop-blur-md shadow-elegant py-3" : "bg-card py-5 border-b border-white/10"}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
@@ -40,29 +31,20 @@ const Header = () => {
               <Scale className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="hidden sm:block">
-              <p className="font-serif text-lg font-bold text-primary leading-none">
-                Dra. Tamires Moura
-              </p>
+              <p className="font-serif text-lg font-bold text-primary leading-none">Dra. Tamires Moura</p>
               <p className="text-xs text-muted-foreground">Advogada</p>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-foreground/80 hover:text-accent font-medium transition-colors duration-300 relative group"
-              >
+              <Link key={link.to} to={link.to} className="text-foreground/80 hover:text-accent font-medium transition-colors duration-300 relative group">
                 {link.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
-            
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant">
-                Agende sua Consultoria
-              </Button>
+              <Button size="sm" className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant">Agende sua Consultoria</Button>
             </a>
           </nav>
 
@@ -74,28 +56,13 @@ const Header = () => {
 
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-card/95 backdrop-blur-md border-t border-border"
-          >
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="md:hidden bg-card/95 backdrop-blur-md border-t border-border">
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-3">
               {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-foreground/80 hover:text-accent font-medium py-2 text-left transition-colors duration-300"
-                >
-                  {link.label}
-                </Link>
+                <Link key={link.to} to={link.to} onClick={() => setIsMobileMenuOpen(false)} className="text-foreground/80 hover:text-accent font-medium py-2 text-left transition-colors duration-300">{link.label}</Link>
               ))}
-              
               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2 w-full">
-                  Agende sua Consultoria
-                </Button>
+                <Button className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2 w-full">Agende sua Consultoria</Button>
               </a>
             </nav>
           </motion.div>
