@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AdminPainel from "./pages/AdminPainel";
-import Sobre from "./pages/Sobre"; // Removido o .tsx
+import Sobre from "./pages/sobre"; // Removido o .tsx
 import AreasAtuacao from "./pages/AreasAtuacao"; 
 import Contato from "./pages/Contato";
 

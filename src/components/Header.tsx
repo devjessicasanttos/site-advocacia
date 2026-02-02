@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Scale, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom"; // Importamos o Link e useNavigate
+import { Link } from "react-router-dom";
 
 const navLinks = [
   { to: "/", label: "Inicio" },
@@ -14,7 +14,6 @@ const navLinks = [
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate(); // Hook para navegar programaticamente
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,17 +23,22 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleWhatsAppClick = () => {
+    window.open("https://wa.me/5511958775594?text=Olá,%20gostaria%20de%20agendar%20uma%20consultoria.", "_blank");
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header
-  className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-    isScrolled
-      ? "bg-card/95 backdrop-blur-md shadow-elegant py-3"
-      : "bg-card py-5 border-b border-white/10" // Troquei transparent por bg-card (que é o seu branco/claro)
-  }`}
->
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-card/95 backdrop-blur-md shadow-elegant py-3"
+          : "bg-card py-5 border-b border-white/10"
+      }`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          {/* Logo - Agora usando Link para voltar ao início */}
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-gradient-navy rounded-lg flex items-center justify-center shadow-elegant group-hover:shadow-gold transition-all duration-300">
               <Scale className="w-5 h-5 text-primary-foreground" />
@@ -60,11 +64,10 @@ const Header = () => {
               </Link>
             ))}
             
-            {/* Botão para página de contato (ou âncora se estiver na home) */}
             <Button
               size="sm"
               className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant"
-              onClick={() => navigate("/")} // Ou direcione para uma página específica de contato
+              onClick={handleWhatsAppClick}
             >
               Agende sua Consultoria
             </Button>
@@ -102,10 +105,7 @@ const Header = () => {
               ))}
               <Button
                 className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2"
-                onClick={() => {
-                  navigate("/");
-                  setIsMobileMenuOpen(false);
-                }}
+                onClick={handleWhatsAppClick}
               >
                 Agende sua Consultoria
               </Button>
