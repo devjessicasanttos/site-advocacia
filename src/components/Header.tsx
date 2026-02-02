@@ -15,7 +15,6 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Link do WhatsApp centralizado para facilitar mudanças futuras
   const whatsappUrl = "https://wa.me/5511958775594?text=Olá,%20Dra.%20Tamires.%20Gostaria%20de%20agendar%20uma%20consultoria.";
 
   useEffect(() => {
@@ -36,7 +35,6 @@ const Header = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-gradient-navy rounded-lg flex items-center justify-center shadow-elegant group-hover:shadow-gold transition-all duration-300">
               <Scale className="w-5 h-5 text-primary-foreground" />
@@ -49,7 +47,6 @@ const Header = () => {
             </div>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
@@ -62,28 +59,19 @@ const Header = () => {
               </Link>
             ))}
             
-            {/* Botão Desktop com link direto */}
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-              <Button
-                size="sm"
-                className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant"
-              >
+              <Button size="sm" className="bg-gradient-navy text-primary-foreground hover:opacity-90 shadow-elegant">
                 Agende sua Consultoria
               </Button>
             </a>
           </nav>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2 text-foreground"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
+          <button className="md:hidden p-2 text-foreground" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -104,14 +92,7 @@ const Header = () => {
                 </Link>
               ))}
               
-              {/* Botão Mobile com link direto */}
-              <a 
-                href={whatsappUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full"
-              >
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button className="bg-gradient-navy text-primary-foreground hover:opacity-90 mt-2 w-full">
                   Agende sua Consultoria
                 </Button>
