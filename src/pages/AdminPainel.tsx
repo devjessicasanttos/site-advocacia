@@ -24,38 +24,39 @@ const AdminPainel = () => {
   };
 
   const enviarResposta = async (id: string) => {
-    const textoResposta = respostas[id];
+  const textoResposta = respostas[id];
 
-    if (!textoResposta || textoResposta.trim() === "") {
-      toast.error("Escreva uma resposta antes de enviar!");
-      return;
-    }
+  if (!textoResposta || textoResposta.trim() === "") {
+    toast.error("Escreva uma resposta antes de enviar!");
+    return;
+  }
 
-    setEnviandoId(id); // Inicia o loading no botão
+  setEnviandoId(id);
 
-    const { error } = await supabase
-      .from('perguntas')
-      .update({ 
-        resposta_advogado: textoResposta,
-        status: 'respondida' 
-      })
-      .eq('id', id);
+  const { error } = await supabase
+    .from('perguntas')
+    .update({ 
+      resposta_advogado: textoResposta,
+      status: 'respondida' 
+    })
+    .eq('id', id);
 
-    if (error) {
-      toast.error("Erro ao responder: " + error.message);
-      setEnviandoId(null);
-    } else {
-      toast.success("Resposta enviada com sucesso!");
-      
-      // Limpa a resposta do estado para organizar as colunas
-      const novasRespostas = { ...respostas };
-      delete novasRespostas[id];
-      setRespostas(novasRespostas);
+  if (error) {
+    toast.error("Erro ao responder: " + error.message);
+    setEnviandoId(null);
+  } else {
+    toast.success("Resposta enviada com sucesso!");
+    
+    // --- ESTA É A LINHA QUE LIMPA O CAMPO DE DIGITAÇÃO ---
+    const novasRespostas = { ...respostas };
+    delete novasRespostas[id]; // Remove o texto desta pergunta do estado
+    setRespostas(novasRespostas); 
+    // ----------------------------------------------------
 
-      await buscarPerguntas(); // Recarrega a lista (move a pergunta de coluna)
-      setEnviandoId(null); // Para o loading
-    }
-  };
+    await buscarPerguntas(); // Atualiza a lista e move para a direita
+    setEnviandoId(null);
+  }
+};
 
   // Filtros de colunas
   const novasPerguntas = perguntas.filter(p => p.status !== 'respondida');
