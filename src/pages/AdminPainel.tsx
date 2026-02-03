@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { MessageSquare, CheckCircle, Clock, RefreshCw } from 'lucide-react';
-import { toast } from "sonner"; // Importando o toast moderno
+import { MessageSquare, CheckCircle, Clock, RefreshCw, Edit3, XCircle } from 'lucide-react';
+import { toast } from "sonner";
 
 const AdminPainel = () => {
   const [perguntas, setPerguntas] = useState<any[]>([]);
   const [respostas, setRespostas] = useState<Record<string, string>>({});
   const [carregando, setCarregando] = useState(true);
-  const [enviandoId, setEnviandoId] = useState<string | null>(null); // Estado para o loading do botão
+  const [enviandoId, setEnviandoId] = useState<string | null>(null);
 
   useEffect(() => {
     buscarPerguntas();
@@ -24,41 +24,39 @@ const AdminPainel = () => {
   };
 
   const enviarResposta = async (id: string) => {
-  const textoResposta = respostas[id];
+    const textoResposta = respostas[id];
 
-  if (!textoResposta || textoResposta.trim() === "") {
-    toast.error("Escreva uma resposta antes de enviar!");
-    return;
-  }
+    if (!textoResposta || textoResposta.trim() === "") {
+      toast.error("Escreva uma resposta antes de enviar!");
+      return;
+    }
 
-  setEnviandoId(id);
+    setEnviandoId(id);
 
-  const { error } = await supabase
-    .from('perguntas')
-    .update({ 
-      resposta_advogado: textoResposta,
-      status: 'respondida' 
-    })
-    .eq('id', id);
+    const { error } = await supabase
+      .from('perguntas')
+      .update({ 
+        resposta_advogado: textoResposta,
+        status: 'respondida' 
+      })
+      .eq('id', id);
 
-  if (error) {
-    toast.error("Erro ao responder: " + error.message);
-    setEnviandoId(null);
-  } else {
-    toast.success("Resposta enviada com sucesso!");
-    
-    // --- ESTA É A LINHA QUE LIMPA O CAMPO DE DIGITAÇÃO ---
-    const novasRespostas = { ...respostas };
-    delete novasRespostas[id]; // Remove o texto desta pergunta do estado
-    setRespostas(novasRespostas); 
-    // ----------------------------------------------------
+    if (error) {
+      toast.error("Erro ao responder: " + error.message);
+      setEnviandoId(null);
+    } else {
+      toast.success("Resposta enviada com sucesso!");
+      
+      // Limpa o estado de edição para fechar o textarea e limpar o campo
+      const novasRespostas = { ...respostas };
+      delete novasRespostas[id];
+      setRespostas(novasRespostas); 
 
-    await buscarPerguntas(); // Atualiza a lista e move para a direita
-    setEnviandoId(null);
-  }
-};
+      await buscarPerguntas();
+      setEnviandoId(null);
+    }
+  };
 
-  // Filtros de colunas
   const novasPerguntas = perguntas.filter(p => p.status !== 'respondida');
   const respondidas = perguntas.filter(p => p.status === 'respondida');
 
@@ -125,35 +123,69 @@ const AdminPainel = () => {
               <CheckCircle size={16} /> Histórico de Respostas ({respondidas.length})
             </h2>
 
-            {respondidas.map((q) => (
-              <div key={q.id} className="bg-white/60 p-6 rounded-2xl shadow-sm border border-slate-200 opacity-80 hover:opacity-100 transition-opacity">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <span className="font-bold text-slate-700">{q.cliente_nome}</span>
-                    <p className="text-xs text-slate-500">Respondida em: {new Date(q.created_at).toLocaleDateString()}</p>
+            {respondidas.map((q) => {
+              const editandoEsta = respostas[q.id] !== undefined;
+
+              return (
+                <div key={q.id} className="bg-white/60 p-6 rounded-2xl shadow-sm border border-slate-200">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <span className="font-bold text-slate-700">{q.cliente_nome}</span>
+                      <p className="text-xs text-slate-500">Respondida em: {new Date(q.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">RESPONDIDA</span>
                   </div>
-                  <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">FINALIZADA</span>
+                  
+                  <p className="text-slate-600 text-[13px] mb-3 leading-relaxed"><strong>P:</strong> {q.pergunta_texto}</p>
+                  
+                  {/* Se estiver editando, mostra o campo. Se não, mostra o texto fixo. */}
+                  {editandoEsta ? (
+                    <textarea 
+                      className="w-full p-3 border-2 border-blue-200 rounded-lg bg-white mb-2 text-sm focus:ring-0 outline-none"
+                      value={respostas[q.id]}
+                      onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
+                      autoFocus
+                    />
+                  ) : (
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-3">
+                      <p className="text-slate-700 text-sm italic leading-relaxed">
+                        <strong>R:</strong> {q.resposta_advogado}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={() => {
+                        if (editandoEsta) {
+                          enviarResposta(q.id);
+                        } else {
+                          setRespostas({...respostas, [q.id]: q.resposta_advogado});
+                        }
+                      }}
+                      disabled={enviandoId === q.id}
+                      className="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1 disabled:text-slate-400"
+                    >
+                      <RefreshCw size={12} className={enviandoId === q.id ? "animate-spin" : ""} /> 
+                      {enviandoId === q.id ? "Salvando..." : (editandoEsta ? "Confirmar Alteração" : "Atualizar Resposta")}
+                    </button>
+
+                    {editandoEsta && (
+                      <button 
+                        onClick={() => {
+                          const novas = {...respostas};
+                          delete novas[q.id];
+                          setRespostas(novas);
+                        }}
+                        className="text-slate-400 text-xs hover:text-red-500 flex items-center gap-1"
+                      >
+                        <XCircle size={12} /> Cancelar
+                      </button>
+                    )}
+                  </div>
                 </div>
-                
-                <p className="text-slate-600 text-sm mb-4">P: {q.pergunta_texto}</p>
-                
-               <textarea 
-                className="w-full p-3 border rounded-lg bg-white mb-2 text-sm"
-                value={respostas[q.id] !== undefined ? respostas[q.id] : q.resposta_advogado || ""}
-              onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
-              placeholder="Sem resposta registrada..."
-/>
-                
-                <button 
-                  onClick={() => enviarResposta(q.id)}
-                  disabled={enviandoId === q.id}
-                  className="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1 disabled:text-slate-400"
-                >
-                  <RefreshCw size={12} className={enviandoId === q.id ? "animate-spin" : ""} /> 
-                  {enviandoId === q.id ? "Atualizando..." : "Atualizar Resposta"}
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
         </div>
