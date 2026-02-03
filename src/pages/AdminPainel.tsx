@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { MessageSquare, CheckCircle, Clock, RefreshCw, Edit3, XCircle } from 'lucide-react';
+import { MessageSquare, CheckCircle, Clock, RefreshCw, XCircle, Mail, Phone } from 'lucide-react';
 import { toast } from "sonner";
 
 const AdminPainel = () => {
@@ -47,7 +47,6 @@ const AdminPainel = () => {
     } else {
       toast.success("Resposta enviada com sucesso!");
       
-      // Limpa o estado de edição para fechar o textarea e limpar o campo
       const novasRespostas = { ...respostas };
       delete novasRespostas[id];
       setRespostas(novasRespostas); 
@@ -127,61 +126,81 @@ const AdminPainel = () => {
               const editandoEsta = respostas[q.id] !== undefined;
 
               return (
-                <div key={q.id} className="bg-white/60 p-6 rounded-2xl shadow-sm border border-slate-200">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <span className="font-bold text-slate-700">{q.cliente_nome}</span>
-                      <p className="text-xs text-slate-500">Respondida em: {new Date(q.created_at).toLocaleDateString()}</p>
+                <div key={q.id} className="bg-white/60 p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                  <div className="mb-4">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold text-slate-800 text-lg">{q.cliente_nome}</span>
+                      <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">RESPONDIDA</span>
                     </div>
-                    <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">RESPONDIDA</span>
+                    
+                    {/* DADOS DE CONTATO ADICIONADOS AQUI */}
+                    <div className="flex flex-col gap-1 mt-2">
+                      <div className="flex items-center gap-2 text-xs text-slate-600">
+                        <Mail size={12} className="text-slate-400" />
+                        <span>{q.cliente_email}</span>
+                      </div>
+                      <a 
+                        href={`https://wa.me/55${q.cliente_telefone?.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-xs text-blue-600 hover:underline w-fit"
+                      >
+                        <Phone size={12} className="text-blue-400" />
+                        <span>{q.cliente_telefone} (Chamar no WhatsApp)</span>
+                      </a>
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-2">Data: {new Date(q.created_at).toLocaleDateString()}</p>
                   </div>
                   
-                  <p className="text-slate-600 text-[13px] mb-3 leading-relaxed"><strong>P:</strong> {q.pergunta_texto}</p>
-                  
-                  {/* Se estiver editando, mostra o campo. Se não, mostra o texto fixo. */}
-                  {editandoEsta ? (
-                    <textarea 
-                      className="w-full p-3 border-2 border-blue-200 rounded-lg bg-white mb-2 text-sm focus:ring-0 outline-none"
-                      value={respostas[q.id]}
-                      onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
-                      autoFocus
-                    />
-                  ) : (
-                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-3">
-                      <p className="text-slate-700 text-sm italic leading-relaxed">
-                        <strong>R:</strong> {q.resposta_advogado}
-                      </p>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center gap-4">
-                    <button 
-                      onClick={() => {
-                        if (editandoEsta) {
-                          enviarResposta(q.id);
-                        } else {
-                          setRespostas({...respostas, [q.id]: q.resposta_advogado});
-                        }
-                      }}
-                      disabled={enviandoId === q.id}
-                      className="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1 disabled:text-slate-400"
-                    >
-                      <RefreshCw size={12} className={enviandoId === q.id ? "animate-spin" : ""} /> 
-                      {enviandoId === q.id ? "Salvando..." : (editandoEsta ? "Confirmar Alteração" : "Atualizar Resposta")}
-                    </button>
-
-                    {editandoEsta && (
+                  <div className="border-t border-slate-100 pt-3">
+                    <p className="text-slate-500 text-xs mb-1 uppercase font-bold tracking-tight">Pergunta:</p>
+                    <p className="text-slate-600 text-[13px] mb-4 leading-relaxed italic">"{q.pergunta_texto}"</p>
+                    
+                    <p className="text-slate-500 text-xs mb-1 uppercase font-bold tracking-tight">Sua Resposta:</p>
+                    {editandoEsta ? (
+                      <textarea 
+                        className="w-full p-3 border-2 border-blue-200 rounded-lg bg-white mb-2 text-sm focus:ring-0 outline-none"
+                        value={respostas[q.id]}
+                        onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
+                        autoFocus
+                      />
+                    ) : (
+                      <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-3">
+                        <p className="text-slate-700 text-sm leading-relaxed">
+                          {q.resposta_advogado}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-4">
                       <button 
                         onClick={() => {
-                          const novas = {...respostas};
-                          delete novas[q.id];
-                          setRespostas(novas);
+                          if (editandoEsta) {
+                            enviarResposta(q.id);
+                          } else {
+                            setRespostas({...respostas, [q.id]: q.resposta_advogado});
+                          }
                         }}
-                        className="text-slate-400 text-xs hover:text-red-500 flex items-center gap-1"
+                        disabled={enviandoId === q.id}
+                        className="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1 disabled:text-slate-400"
                       >
-                        <XCircle size={12} /> Cancelar
+                        <RefreshCw size={12} className={enviandoId === q.id ? "animate-spin" : ""} /> 
+                        {enviandoId === q.id ? "Salvando..." : (editandoEsta ? "Confirmar Alteração" : "Atualizar Resposta")}
                       </button>
-                    )}
+
+                      {editandoEsta && (
+                        <button 
+                          onClick={() => {
+                            const novas = {...respostas};
+                            delete novas[q.id];
+                            setRespostas(novas);
+                          }}
+                          className="text-slate-400 text-xs hover:text-red-500 flex items-center gap-1"
+                        >
+                          <XCircle size={12} /> Cancelar
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
