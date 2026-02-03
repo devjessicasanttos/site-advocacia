@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { MessageSquare, CheckCircle, Clock, RefreshCw } from 'lucide-react';
+import { toast } from "sonner"; // Importando o toast moderno
 
 const AdminPainel = () => {
-  const [perguntas, setPerguntas] = useState([]);
-  const [respostas, setRespostas] = useState({});
+  const [perguntas, setPerguntas] = useState<any[]>([]);
+  const [respostas, setRespostas] = useState<Record<string, string>>({});
   const [carregando, setCarregando] = useState(true);
+  const [enviandoId, setEnviandoId] = useState<string | null>(null); // Estado para o loading do botão
 
   useEffect(() => {
     buscarPerguntas();
@@ -22,23 +24,40 @@ const AdminPainel = () => {
   };
 
   const enviarResposta = async (id: string) => {
+    const textoResposta = respostas[id];
+
+    if (!textoResposta || textoResposta.trim() === "") {
+      toast.error("Escreva uma resposta antes de enviar!");
+      return;
+    }
+
+    setEnviandoId(id); // Inicia o loading no botão
+
     const { error } = await supabase
       .from('perguntas')
       .update({ 
-        resposta_advogado: respostas[id],
+        resposta_advogado: textoResposta,
         status: 'respondida' 
       })
       .eq('id', id);
 
     if (error) {
-      alert("Erro ao responder: " + error.message);
+      toast.error("Erro ao responder: " + error.message);
+      setEnviandoId(null);
     } else {
-      alert("Resposta enviada com sucesso!");
-      buscarPerguntas(); // Recarrega para mover a pergunta de coluna
+      toast.success("Resposta enviada com sucesso!");
+      
+      // Limpa a resposta do estado para organizar as colunas
+      const novasRespostas = { ...respostas };
+      delete novasRespostas[id];
+      setRespostas(novasRespostas);
+
+      await buscarPerguntas(); // Recarrega a lista (move a pergunta de coluna)
+      setEnviandoId(null); // Para o loading
     }
   };
 
-  // Filtramos as perguntas em duas listas
+  // Filtros de colunas
   const novasPerguntas = perguntas.filter(p => p.status !== 'respondida');
   const respondidas = perguntas.filter(p => p.status === 'respondida');
 
@@ -81,14 +100,19 @@ const AdminPainel = () => {
                   className="w-full p-4 border rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                   placeholder="Escreva sua orientação jurídica..."
                   rows={3}
+                  value={respostas[q.id] || ""}
                   onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
                 />
                 
                 <button 
                   onClick={() => enviarResposta(q.id)}
-                  className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                  disabled={enviandoId === q.id}
+                  className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                    enviandoId === q.id ? "bg-slate-400 cursor-not-allowed" : "bg-slate-900 text-white hover:bg-slate-800"
+                  }`}
                 >
-                  <MessageSquare size={18} /> Enviar resposta!
+                  {enviandoId === q.id ? <RefreshCw className="animate-spin" size={18} /> : <MessageSquare size={18} />}
+                  {enviandoId === q.id ? "Enviando..." : "Enviar resposta!"}
                 </button>
               </div>
             ))}
@@ -114,15 +138,17 @@ const AdminPainel = () => {
                 
                 <textarea 
                   className="w-full p-3 border rounded-lg bg-white mb-2 text-sm"
-                  value={respostas[q.id] || q.resposta_advogado}
+                  value={respostas[q.id] !== undefined ? respostas[q.id] : q.resposta_advogado}
                   onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
                 />
                 
                 <button 
                   onClick={() => enviarResposta(q.id)}
-                  className="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1"
+                  disabled={enviandoId === q.id}
+                  className="text-blue-600 text-xs font-bold hover:underline flex items-center gap-1 disabled:text-slate-400"
                 >
-                  <RefreshCw size={12} /> Atualizar Resposta
+                  <RefreshCw size={12} className={enviandoId === q.id ? "animate-spin" : ""} /> 
+                  {enviandoId === q.id ? "Atualizando..." : "Atualizar Resposta"}
                 </button>
               </div>
             ))}

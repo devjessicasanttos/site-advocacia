@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { MessageCircle, CheckCircle2, User, Clock } from 'lucide-react';
+import { MessageCircle, CheckCircle2, User, Clock, Loader2 } from 'lucide-react';
+import { toast } from "sonner"; // 1. Importando o toast moderno
 
 const ClientQuestions = () => {
   const [nome, setNome] = useState('');
@@ -10,7 +11,6 @@ const ClientQuestions = () => {
   const [enviando, setEnviando] = useState(false);
   const [historico, setHistorico] = useState([]);
 
-  // Busca as perguntas respondidas ao carregar a página
   useEffect(() => {
     buscarPerguntas();
   }, []);
@@ -19,7 +19,7 @@ const ClientQuestions = () => {
     const { data } = await supabase
       .from('perguntas')
       .select('*')
-      .eq('status', 'respondida') // Só mostra o que a Dra. já respondeu
+      .eq('status', 'respondida')
       .order('created_at', { ascending: false })
       .limit(5);
     setHistorico(data || []);
@@ -35,22 +35,32 @@ const ClientQuestions = () => {
         cliente_nome: nome, 
         cliente_email: email, 
         cliente_telefone: telefone, 
-        pergunta_texto: pergunta 
+        pergunta_texto: pergunta,
+        status: 'pendente' // Garante que entra como pendente
       }]);
 
     if (error) {
-      alert("Erro ao enviar: " + error.message);
+      // 2. Toast de erro moderno
+      toast.error("Erro ao enviar sua dúvida", {
+        description: "Tente novamente em instantes ou nos chame no WhatsApp."
+      });
     } else {
-      alert("Sua dúvida foi enviada! Em breve a Dra. Tamires responderá e ela aparecerá aqui.");
-      setNome(''); setEmail(''); setTelefone(''); setPergunta('');
+      // 3. Toast de sucesso moderno
+      toast.success("Consulta enviada com sucesso!", {
+        description: "A Dra. Tamires analisará seu caso em breve.",
+        duration: 5000,
+      });
+
+      // Limpa os campos
+      setNome(''); 
+      setEmail(''); 
+      setTelefone(''); 
+      setPergunta('');
     }
     setEnviando(false);
   };
 
   return (
-    /* Adicionado o id="consultoria" para ligar com o link da seção de contato.
-       Adicionado scroll-mt-32 para dar respiro quando a página rolar até aqui.
-    */
     <section id="consultoria" className="py-20 bg-slate-50 scroll-mt-32">
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-12">
@@ -67,31 +77,40 @@ const ClientQuestions = () => {
             <form onSubmit={enviarMensagem} className="space-y-4">
               <input 
                 type="text" placeholder="Seu Nome completo" 
-                className="w-full p-3 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none text-slate-900"
+                className="w-full p-3 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 transition-all"
                 value={nome} onChange={(e) => setNome(e.target.value)} required 
               />
               <div className="grid grid-cols-2 gap-4">
                 <input 
                   type="email" placeholder="E-mail" 
-                  className="w-full p-3 border rounded-xl bg-slate-50 text-slate-900"
+                  className="w-full p-3 border rounded-xl bg-slate-50 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   value={email} onChange={(e) => setEmail(e.target.value)} required 
                 />
                 <input 
                   type="tel" placeholder="WhatsApp" 
-                  className="w-full p-3 border rounded-xl bg-slate-50 text-slate-900"
+                  className="w-full p-3 border rounded-xl bg-slate-50 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   value={telefone} onChange={(e) => setTelefone(e.target.value)} required 
                 />
               </div>
               <textarea 
                 placeholder="Descreva sua situação jurídica..." 
-                className="w-full p-3 border rounded-xl bg-slate-50 h-32 text-slate-900"
+                className="w-full p-3 border rounded-xl bg-slate-50 h-32 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 value={pergunta} onChange={(e) => setPergunta(e.target.value)} required 
               />
               <button 
                 disabled={enviando}
-                className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg"
+                className={`w-full py-4 rounded-xl font-bold transition-all shadow-lg flex items-center justify-center gap-2 ${
+                  enviando ? 'bg-slate-400 cursor-not-allowed' : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
               >
-                {enviando ? 'Processando...' : 'Enviar para análise'}
+                {enviando ? (
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Processando...
+                  </>
+                ) : (
+                  'Enviar para análise'
+                )}
               </button>
             </form>
           </div>
@@ -105,7 +124,7 @@ const ClientQuestions = () => {
               <p className="text-slate-400 italic">As primeiras respostas aparecerão aqui em breve...</p>
             )}
             {historico.map((item: any) => (
-              <div key={item.id} className="bg-white p-5 rounded-xl border-l-4 border-blue-600 shadow-sm">
+              <div key={item.id} className="bg-white p-5 rounded-xl border-l-4 border-blue-600 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-2 mb-2 text-sm text-slate-500">
                   <User size={14} /> <span>{item.cliente_nome} perguntou:</span>
                 </div>
