@@ -137,11 +137,12 @@ const AdminPainel = () => {
                 
                 <p className="text-slate-600 text-sm mb-4">P: {q.pergunta_texto}</p>
                 
-                <textarea 
-                  className="w-full p-3 border rounded-lg bg-white mb-2 text-sm"
-                  value={respostas[q.id] !== undefined ? respostas[q.id] : q.resposta_advogado}
-                  onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
-                />
+               <textarea 
+                className="w-full p-3 border rounded-lg bg-white mb-2 text-sm"
+                value={respostas[q.id] !== undefined ? respostas[q.id] : q.resposta_advogado || ""}
+              onChange={(e) => setRespostas({...respostas, [q.id]: e.target.value})}
+              placeholder="Sem resposta registrada..."
+/>
                 
                 <button 
                   onClick={() => enviarResposta(q.id)}
