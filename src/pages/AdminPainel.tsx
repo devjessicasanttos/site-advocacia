@@ -20,34 +20,45 @@ const AdminPainel = () => {
     setCarregando(false);
   };
 
-  // 2. CONFIGURAÇÃO DO REALTIME + BUSCA INICIAL
   useEffect(() => {
     buscarPerguntas();
 
-    // Cria o canal para ouvir mudanças na tabela 'perguntas'
+    // PEDIR PERMISSÃO PARA NOTIFICAÇÕES EXTERNAS AO CARREGAR
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+
     const canal = supabase
       .channel('notificacoes-admin')
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'perguntas' },
         (payload) => {
-          // Tocar alerta sonoro
-          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
-          audio.play().catch(() => console.log("Áudio aguardando interação..."));
+          const nomeCliente = payload.new.cliente_nome;
 
-          // Mostrar Toast de alerta
-          toast.info("Nova pergunta recebida!", {
-            description: `Cliente: ${payload.new.cliente_nome}`,
-            duration: 8000,
+          // 1. SOM (Continua tocando para ajudar no alerta)
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.play().catch(() => {});
+
+          // 2. NOTIFICAÇÃO DO SISTEMA (Aparece fora do navegador)
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("⚖️ Nova Pergunta Jurídica", {
+              body: `O cliente ${nomeCliente} enviou uma dúvida agora!`,
+              icon: "/favicon.ico" // Opcional: ícone do seu site
+            });
+          }
+
+          // 3. TOAST (Para quando ela voltar para a aba do painel)
+          toast.error("🚨 NOVA CONSULTA RECEBIDA!", {
+            description: `Cliente: ${nomeCliente}`,
+            duration: Infinity,
           });
 
-          // Atualizar a lista automaticamente
           buscarPerguntas();
         }
       )
       .subscribe();
 
-    // Limpa a conexão ao fechar a página
     return () => {
       supabase.removeChannel(canal);
     };
