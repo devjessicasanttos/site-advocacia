@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Verifique se a URL termina com .co e não tem espaços
-const supabaseUrl = 'https://hasgraladzwrdtreahfd.supabase.co';
+// O Vite busca os valores dentro do seu arquivo .env automaticamente
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Certifique-se de que colou a chave do print yy.png AQUI dentro das aspas
-const supabaseAnonKey = 'sb_publishable_gDP4AG7e6C4utKJeJx_PRg_DJ_3DNdo'; 
+// Verificação de segurança para te ajudar no console do navegador
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("⚠️ Erro: As chaves do Supabase não foram carregadas. Verifique seu arquivo .env");
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
