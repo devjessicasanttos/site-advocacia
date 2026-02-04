@@ -152,7 +152,7 @@ const ClientQuestions = () => {
           </p>
           
           <Link 
-            to="/admpainel" 
+            to="/AdmPainel" 
             className="inline-flex items-center gap-2 text-slate-300 hover:text-slate-600 transition-all text-[10px] uppercase tracking-[3px] group"
           >
             <div className="w-7 h-7 rounded-full border border-slate-100 flex items-center justify-center group-hover:border-slate-300 transition-all">
