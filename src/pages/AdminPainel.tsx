@@ -9,7 +9,6 @@ const AdminPainel = () => {
   const [carregando, setCarregando] = useState(true);
   const [enviandoId, setEnviandoId] = useState<string | null>(null);
 
-  // 1. BUSCAR PERGUNTAS (Função isolada para ser reusada)
   const buscarPerguntas = async () => {
     setCarregando(true);
     const { data } = await supabase
@@ -23,9 +22,11 @@ const AdminPainel = () => {
   useEffect(() => {
     buscarPerguntas();
 
-    // PEDIR PERMISSÃO PARA NOTIFICAÇÕES EXTERNAS AO CARREGAR
+    // 1. SOLICITAR PERMISSÃO LOGO AO ABRIR
     if ("Notification" in window) {
-      Notification.requestPermission();
+      Notification.requestPermission().then(perm => {
+        console.log("Permissão de notificação:", perm);
+      });
     }
 
     const canal = supabase
@@ -36,19 +37,26 @@ const AdminPainel = () => {
         (payload) => {
           const nomeCliente = payload.new.cliente_nome;
 
-          // 1. SOM (Continua tocando para ajudar no alerta)
+          // 2. ALERTAS SONOROS
           const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
           audio.play().catch(() => {});
 
-          // 2. NOTIFICAÇÃO DO SISTEMA (Aparece fora do navegador)
+          // 3. NOTIFICAÇÃO NATIVA (EXTERNA)
           if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("⚖️ Nova Pergunta Jurídica", {
+            const notificacao = new Notification("⚖️ Nova Pergunta Jurídica", {
               body: `O cliente ${nomeCliente} enviou uma dúvida agora!`,
-              icon: "/favicon.ico" // Opcional: ícone do seu site
+              requireInteraction: true, // Garante que a notificação fique visível no Windows
+              tag: 'nova-pergunta'
             });
+
+            // Se clicar na notificação, traz o navegador para a frente
+            notificacao.onclick = () => {
+              window.focus();
+              notificacao.close();
+            };
           }
 
-          // 3. TOAST (Para quando ela voltar para a aba do painel)
+          // 4. ALERTA VISUAL (INTERNO)
           toast.error("🚨 NOVA CONSULTA RECEBIDA!", {
             description: `Cliente: ${nomeCliente}`,
             duration: Infinity,
