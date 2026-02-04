@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { MessageSquare, CheckCircle, Clock, RefreshCw, XCircle, Mail, Phone } from 'lucide-react';
+import { MessageSquare, CheckCircle, Clock, RefreshCw, XCircle, Mail, Phone, Lock } from 'lucide-react';
 import { toast } from "sonner";
 
 const AdminPainel = () => {
@@ -8,6 +8,22 @@ const AdminPainel = () => {
   const [respostas, setRespostas] = useState<Record<string, string>>({});
   const [carregando, setCarregando] = useState(true);
   const [enviandoId, setEnviandoId] = useState<string | null>(null);
+
+  // --- LÓGICA DE SEGURANÇA ---
+  const [autenticado, setAutenticado] = useState(false);
+  const [senhaInput, setSenhaInput] = useState("");
+  const SENHA_MESTRA = "tamires2024"; // Altere esta senha se desejar!
+
+  const fazerLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (senhaInput === SENHA_MESTRA) {
+      setAutenticado(true);
+      localStorage.setItem("adm_logado", "true");
+      toast.success("Bem-vinda, Dra. Tamires!");
+    } else {
+      toast.error("Senha incorreta!");
+    }
+  };
 
   const buscarPerguntas = async () => {
     setCarregando(true);
@@ -20,13 +36,17 @@ const AdminPainel = () => {
   };
 
   useEffect(() => {
+    // Verificar se já estava logada antes
+    const logado = localStorage.getItem("adm_logado");
+    if (logado === "true") {
+      setAutenticado(true);
+    }
+
     buscarPerguntas();
 
-    // 1. SOLICITAR PERMISSÃO LOGO AO ABRIR
+    // 1. SOLICITAR PERMISSÃO PARA NOTIFICAÇÕES
     if ("Notification" in window) {
-      Notification.requestPermission().then(perm => {
-        console.log("Permissão de notificação:", perm);
-      });
+      Notification.requestPermission();
     }
 
     const canal = supabase
@@ -45,11 +65,10 @@ const AdminPainel = () => {
           if ("Notification" in window && Notification.permission === "granted") {
             const notificacao = new Notification("⚖️ Nova Pergunta Jurídica", {
               body: `O cliente ${nomeCliente} enviou uma dúvida agora!`,
-              requireInteraction: true, // Garante que a notificação fique visível no Windows
+              requireInteraction: true,
               tag: 'nova-pergunta'
             });
 
-            // Se clicar na notificação, traz o navegador para a frente
             notificacao.onclick = () => {
               window.focus();
               notificacao.close();
@@ -95,11 +114,9 @@ const AdminPainel = () => {
       setEnviandoId(null);
     } else {
       toast.success("Resposta enviada com sucesso!");
-      
       const novasRespostas = { ...respostas };
       delete novasRespostas[id];
       setRespostas(novasRespostas); 
-
       await buscarPerguntas();
       setEnviandoId(null);
     }
@@ -108,6 +125,39 @@ const AdminPainel = () => {
   const novasPerguntas = perguntas.filter(p => p.status !== 'respondida');
   const respondidas = perguntas.filter(p => p.status === 'respondida');
 
+  // TELA DE LOGIN (BLOQUEIO)
+  if (!autenticado) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 font-sans">
+        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full text-center">
+          <div className="bg-amber-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="text-amber-600" size={36} />
+          </div>
+          <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Painel Restrito</h2>
+          <p className="text-slate-500 mb-8 text-sm">Acesso exclusivo para Dra. Tamires Moura.</p>
+          
+          <form onSubmit={fazerLogin} className="space-y-4">
+            <input 
+              type="password" 
+              placeholder="Digite a senha mestra"
+              className="w-full p-4 bg-slate-100 border-2 border-transparent focus:border-amber-500 rounded-2xl outline-none transition-all text-center text-lg font-bold"
+              value={senhaInput}
+              onChange={(e) => setSenhaInput(e.target.value)}
+              autoFocus
+            />
+            <button 
+              type="submit"
+              className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-lg active:scale-95"
+            >
+              Acessar Painel
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // PAINEL ADMINISTRATIVO (CONTEÚDO PROTEGIDO)
   return (
     <div className="p-4 md:p-8 bg-slate-100 min-h-screen font-sans">
       <div className="max-w-7xl mx-auto">
@@ -116,9 +166,20 @@ const AdminPainel = () => {
             <h1 className="text-2xl font-bold text-slate-800">Painel de Gestão Jurídica</h1>
             <p className="text-slate-500 text-sm">Olá, Dra. Tamires. Gerencie suas consultas aqui.</p>
           </div>
-          <button onClick={buscarPerguntas} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-            <RefreshCw className={carregando ? "animate-spin" : ""} />
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => {
+                localStorage.removeItem("adm_logado");
+                setAutenticado(false);
+              }}
+              className="text-xs text-slate-400 hover:text-red-500 font-medium"
+            >
+              Sair do Painel
+            </button>
+            <button onClick={buscarPerguntas} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+              <RefreshCw className={carregando ? "animate-spin" : ""} />
+            </button>
+          </div>
         </header>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -254,7 +315,6 @@ const AdminPainel = () => {
               );
             })}
           </div>
-
         </div>
       </div>
     </div>
