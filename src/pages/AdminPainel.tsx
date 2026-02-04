@@ -9,10 +9,7 @@ const AdminPainel = () => {
   const [carregando, setCarregando] = useState(true);
   const [enviandoId, setEnviandoId] = useState<string | null>(null);
 
-  useEffect(() => {
-    buscarPerguntas();
-  }, []);
-
+  // 1. BUSCAR PERGUNTAS (Função isolada para ser reusada)
   const buscarPerguntas = async () => {
     setCarregando(true);
     const { data } = await supabase
@@ -22,6 +19,39 @@ const AdminPainel = () => {
     setPerguntas(data || []);
     setCarregando(false);
   };
+
+  // 2. CONFIGURAÇÃO DO REALTIME + BUSCA INICIAL
+  useEffect(() => {
+    buscarPerguntas();
+
+    // Cria o canal para ouvir mudanças na tabela 'perguntas'
+    const canal = supabase
+      .channel('notificacoes-admin')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'perguntas' },
+        (payload) => {
+          // Tocar alerta sonoro
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+          audio.play().catch(() => console.log("Áudio aguardando interação..."));
+
+          // Mostrar Toast de alerta
+          toast.info("Nova pergunta recebida!", {
+            description: `Cliente: ${payload.new.cliente_nome}`,
+            duration: 8000,
+          });
+
+          // Atualizar a lista automaticamente
+          buscarPerguntas();
+        }
+      )
+      .subscribe();
+
+    // Limpa a conexão ao fechar a página
+    return () => {
+      supabase.removeChannel(canal);
+    };
+  }, []);
 
   const enviarResposta = async (id: string) => {
     const textoResposta = respostas[id];
@@ -133,7 +163,6 @@ const AdminPainel = () => {
                       <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">RESPONDIDA</span>
                     </div>
                     
-                    {/* DADOS DE CONTATO ADICIONADOS AQUI */}
                     <div className="flex flex-col gap-1 mt-2">
                       <div className="flex items-center gap-2 text-xs text-slate-600">
                         <Mail size={12} className="text-slate-400" />
