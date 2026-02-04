@@ -148,7 +148,7 @@ const ClientQuestions = () => {
       <footer className="py-12 bg-white border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <p className="text-slate-400 text-xs mb-6 uppercase tracking-widest">
-            © 2024 Dra. Tamires Moura - Advocacia e Consultoria
+            © 2026 Dra. Tamires Moura - Advocacia e Consultoria
           </p>
           
           <Link 
