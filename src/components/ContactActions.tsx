@@ -103,7 +103,7 @@ const ContactActions = () => {
           })}
         </div>
 
-        {/* --- NOVA SEÇÃO: INFORMAÇÕES ADICIONAIS --- */}
+        {/* Informações Complementares */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ const ContactActions = () => {
         >
           {/* Instagram */}
           <a 
-            href="https://instagram.com/tamiresmoura.adv" 
+            href="https://www.instagram.com/tm_juris?igsh=dXN5cmR2bTkxcjZz" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-start gap-4 group"
@@ -150,15 +150,6 @@ const ContactActions = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Rodapé da seção */}
-        <motion.p className="text-center mt-16 text-slate-400 text-sm">
-          Atendimento presencial mediante agendamento prévio. <br className="md:hidden" />
-          Utilize nosso sistema de{" "}
-          <a href="#consultoria" className="text-amber-500 hover:underline font-bold">
-            Consultoria Digital
-          </a>.
-        </motion.p>
       </div>
     </section>
   );
