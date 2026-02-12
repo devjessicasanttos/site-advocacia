@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Phone, MessageSquare, Mail, Calendar, ArrowRight } from "lucide-react";
+import { Phone, MessageSquare, Mail, Calendar, ArrowRight, Instagram, Clock, MapPin } from "lucide-react";
 
 const contactMethods = [
   {
@@ -8,7 +8,6 @@ const contactMethods = [
     icon: MessageSquare,
     action: "Falar no WhatsApp",
     color: "bg-green-600",
-    // Link direto para o chat
     link: "https://wa.me/5511958775594?text=Olá%20Dra.%20Tamires,%20preciso%20de%20um%20atendimento%20urgente." 
   },
   {
@@ -17,7 +16,6 @@ const contactMethods = [
     icon: Calendar,
     action: "Ver Horários",
     color: "bg-amber-500",
-    // Aqui incluímos uma mensagem específica de agendamento
     link: "https://wa.me/5511958775594?text=Olá%20Dra.%20Tamires,%20gostaria%20de%20verificar%20os%20horários%20disponíveis%20para%20uma%20consultoria." 
   },
   {
@@ -37,6 +35,7 @@ const contactMethods = [
     link: "tel:+5511958775594"
   }
 ];
+
 const ContactActions = () => {
   return (
     <section 
@@ -56,8 +55,8 @@ const ContactActions = () => {
           </p>
         </motion.div>
 
-        {/* Grade de Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {/* Grade de Cards Principais */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-16">
           {contactMethods.map((method, index) => {
             const isWhatsApp = method.title === "WhatsApp Express";
             
@@ -71,29 +70,28 @@ const ContactActions = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10 }}
+                whileHover={{ y: -5 }}
                 className={`p-8 rounded-2xl transition-all flex flex-col h-full group relative overflow-hidden ${
                   isWhatsApp 
-                    ? "bg-white/10 border-2 border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.2)]" 
-                    : "bg-white/5 border border-white/10"
+                    ? "bg-white/10 border-2 border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.1)]" 
+                    : "bg-white/5 border border-white/10 hover:bg-white/10"
                 }`}
               >
-                {/* Badge de "Mais Rápido" para o WhatsApp */}
                 {isWhatsApp && (
-                  <span className="absolute top-4 right-4 bg-green-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest animate-bounce">
+                  <span className="absolute top-4 right-4 bg-green-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest animate-pulse">
                     Mais Rápido
                   </span>
                 )}
 
-                <div className={`${method.color} w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-xl ${isWhatsApp ? "animate-pulse" : ""}`}>
-                  <method.icon className="text-white" size={28} />
+                <div className={`${method.color} w-12 h-12 rounded-xl flex items-center justify-center mb-6 shadow-lg`}>
+                  <method.icon className="text-white" size={24} />
                 </div>
 
                 <h3 className={`text-xl font-bold mb-3 ${isWhatsApp ? "text-green-400" : "text-white"}`}>
                   {method.title}
                 </h3>
                 
-                <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-grow text-justify">
+                <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">
                   {method.description}
                 </p>
                 
@@ -105,8 +103,57 @@ const ContactActions = () => {
           })}
         </div>
 
+        {/* --- NOVA SEÇÃO: INFORMAÇÕES ADICIONAIS --- */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-white/10 max-w-7xl mx-auto"
+        >
+          {/* Instagram */}
+          <a 
+            href="https://instagram.com/tamiresmoura.adv" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-start gap-4 group"
+          >
+            <div className="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-3 rounded-lg group-hover:scale-110 transition-transform">
+              <Instagram size={20} />
+            </div>
+            <div>
+              <h4 className="font-bold text-white group-hover:text-amber-500 transition-colors">Instagram Profissional</h4>
+              <p className="text-slate-400 text-sm">@tm_juris</p>
+            </div>
+          </a>
+
+          {/* Horário */}
+          <div className="flex items-start gap-4">
+            <div className="bg-slate-700 p-3 rounded-lg">
+              <Clock size={20} className="text-amber-500" />
+            </div>
+            <div>
+              <h4 className="font-bold text-white">Horário de Atendimento</h4>
+              <p className="text-slate-400 text-sm">Segunda a Sexta: 09h às 18h</p>
+            </div>
+          </div>
+
+          {/* Endereço */}
+          <div className="flex items-start gap-4">
+            <div className="bg-slate-700 p-3 rounded-lg">
+              <MapPin size={20} className="text-amber-500" />
+            </div>
+            <div>
+              <h4 className="font-bold text-white">Escritório Físico</h4>
+              <p className="text-slate-400 text-sm leading-snug">
+                Rua Marim, 200 - Sala 04<br/>Colonial, São Paulo - SP
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Rodapé da seção */}
-        <motion.p className="text-center mt-16 text-slate-300">
+        <motion.p className="text-center mt-16 text-slate-400 text-sm">
+          Atendimento presencial mediante agendamento prévio. <br className="md:hidden" />
           Utilize nosso sistema de{" "}
           <a href="#consultoria" className="text-amber-500 hover:underline font-bold">
             Consultoria Digital
